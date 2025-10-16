@@ -3,294 +3,854 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Customer Dashboard - Grow Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --primary-color: #2E7D32;
-            --secondary-color: #4CAF50;
-            --accent-color: #FFC107;
-            --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light-bg);
+        * {
             margin: 0;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
-        
-        /* --- Header & Search --- */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .location-info { font-size: 1.1em; font-weight: 500; }
-        .location-info strong { color: var(--primary-color); }
-        .search-bar { width: 100%; padding: 12px 15px; font-size: 1em; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* --- Offers & Shops Sections --- */
-        .offers-section h2, .shops-section h2 { font-size: 1.5em; color: #333; margin-bottom: 15px; }
-        .offers-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-        .offers-carousel::-webkit-scrollbar { display: none; }
-        .offer-card { flex: 0 0 280px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .offer-card h3 { margin: 0 0 5px 0; }
-        .offer-card p { margin: 0; font-size: 0.9em; opacity: 0.9; }
-        
-        /* --- Shop Grid --- */
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .shop-card { background-color: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; cursor: pointer; transition: all 0.2s ease; }
-        .shop-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .shop-initial { width: 50px; height: 50px; background-color: var(--light-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.5em; color: var(--primary-color); margin-right: 15px; }
-        .shop-details .name { font-weight: 600; font-size: 1.1em; }
-        .shop-details .type { font-size: 0.9em; color: #6c757d; }
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light-bg: #f8fafc;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
 
-        /* --- Shop Detail Modal --- */
-        .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-        .modal-content { background-color: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .modal-header h2 { margin: 0; color: var(--primary-color); }
-        .close-btn { font-size: 28px; font-weight: bold; cursor: pointer; color: #6c757d; }
-        .modal-body { overflow-y: auto; padding-right: 15px; }
-        .modal-shop-details p { margin: 4px 0; }
-        .map-container { width: 100%; height: 200px; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid var(--border-color); }
-        .modal-body h3 { border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
-        
-        /* Product & Review List */
-        .product-list, .review-list { list-style: none; padding: 0; }
-        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .review-item { padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .review-item .name { font-weight: 600; }
-        .review-item .stars { color: var(--accent-color); }
-        .product-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 15px; }
-        .product-price { font-weight: 600; }
-        
-        /* Review Form */
-        #reviewForm .form-group { margin-bottom: 10px; }
-        #reviewForm textarea { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins'; }
-        #reviewForm button { padding: 10px 20px; border-radius: 8px; border: none; background-color: var(--secondary-color); color: white; cursor: pointer; }
-        
-        .modal-footer { margin-top: 20px; text-align: right; }
-        .order-btn { padding: 12px 25px; border: none; background-color: var(--primary-color); color: white; border-radius: 8px; font-size: 1em; font-weight: 500; cursor: pointer; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: white;
+            padding: 16px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logout-btn {
+            padding: 8px 20px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .location-info {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .location-name {
+            color: var(--primary);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1em;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--text);
+            margin: 32px 0 16px 0;
+        }
+
+        .offers-carousel {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--border);
+        }
+
+        .offers-carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .offers-carousel::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .offers-carousel::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .offer-card {
+            flex: 0 0 320px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .offer-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+
+        .offer-card p {
+            opacity: 0.95;
+            font-size: 0.95em;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .shop-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .shop-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.8em;
+            color: white;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .shop-details .shop-name {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .shop-details .shop-type {
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.8em;
+            color: var(--text);
+        }
+
+        .close-btn {
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            padding: 28px;
+        }
+
+        .shop-info {
+            margin-bottom: 24px;
+        }
+
+        .shop-info p {
+            margin: 8px 0;
+            color: var(--text-light);
+        }
+
+        .shop-info strong {
+            color: var(--text);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 220px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid var(--border);
+        }
+
+        .section-divider {
+            border-top: 2px solid var(--border);
+            margin: 28px 0;
+            padding-top: 24px;
+        }
+
+        .section-heading {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .product-list {
+            list-style: none;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        .product-item:hover {
+            background: var(--light-bg);
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-checkbox {
+            width: 22px;
+            height: 22px;
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1em;
+        }
+
+        .review-list {
+            margin-top: 16px;
+        }
+
+        .review-item {
+            padding: 16px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .stars {
+            color: var(--warning);
+        }
+
+        .review-comment {
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+
+        .review-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--light-bg);
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            border-top: 2px solid var(--border);
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">Grow Community</div>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </nav>
 
     <div class="container">
-        <div class="header"><div class="location-info">Shops Near: <strong>Tirupati</strong></div></div>
+        <div class="header">
+            <div class="location-info">Shops Near: <span class="location-name">Tirupati</span></div>
+        </div>
+
         <input type="search" id="searchBar" class="search-bar" placeholder="Search for shops...">
-        <div class="offers-section"><h2>Recent Offers</h2><div id="offersCarousel" class="offers-carousel"></div></div>
-        <div class="shops-section"><h2>All Shops</h2><div id="shopGrid" class="shop-grid"></div></div>
+
+        <h2 class="section-title">Recent Offers</h2>
+        <div id="offersCarousel" class="offers-carousel"></div>
+
+        <h2 class="section-title">All Shops</h2>
+        <div id="shopGrid" class="shop-grid"></div>
     </div>
 
-    <!-- Shop Detail Modal -->
     <div id="shopModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header"><h2 id="modalShopName">Shop Name</h2><span id="closeModal" class="close-btn">&times;</span></div>
+            <div class="modal-header">
+                <h2 id="modalShopName">Shop Name</h2>
+                <span id="closeModal" class="close-btn">&times;</span>
+            </div>
             <div class="modal-body">
-                <div class="modal-shop-details">
+                <div class="shop-info">
                     <p><strong>Contact:</strong> <span id="modalShopPhone"></span></p>
+                    <p><strong>WhatsApp:</strong> <span id="modalShopWhatsapp"></span></p>
                     <p><strong>Address:</strong> <span id="modalShopAddress"></span></p>
                 </div>
                 <div class="map-container">
-                    <iframe id="shopMap" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                    <iframe id="shopMap" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen=""></iframe>
                 </div>
-                
-                <h3>Available Products (Select to Order)</h3>
-                <ul id="modalProductList" class="product-list"></ul>
-                
-                <h3>Reviews & Feedback</h3>
-                <div id="reviewList" class="review-list"></div>
-                
-                <h3>Leave a Review</h3>
-                <form id="reviewForm">
-                    <div class="form-group">
-                        <label for="reviewRating">Rating:</label>
-                        <select id="reviewRating">
-                            <option value="5">⭐⭐⭐⭐⭐</option>
-                            <option value="4">⭐⭐⭐⭐</option>
-                            <option value="3">⭐⭐⭐</option>
-                            <option value="2">⭐⭐</option>
-                            <option value="1">⭐</option>
-                        </select>
+
+                <div class="section-divider">
+                    <h3 class="section-heading">Available Products</h3>
+                    <ul id="modalProductList" class="product-list"></ul>
+                </div>
+
+                <div class="section-divider">
+                    <h3 class="section-heading">Reviews & Feedback</h3>
+                    <div id="reviewList" class="review-list"></div>
+
+                    <div class="review-form">
+                        <h4 style="margin-bottom: 16px;">Leave a Review</h4>
+                        <form id="reviewForm">
+                            <div class="form-group">
+                                <label for="reviewRating">Rating</label>
+                                <select id="reviewRating">
+                                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                    <option value="4">⭐⭐⭐⭐ Good</option>
+                                    <option value="3">⭐⭐⭐ Average</option>
+                                    <option value="2">⭐⭐ Poor</option>
+                                    <option value="1">⭐ Very Poor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewComment">Comment</label>
+                                <textarea id="reviewComment" rows="3" placeholder="Share your experience..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="reviewComment">Comment:</label>
-                        <textarea id="reviewComment" rows="3" placeholder="Share your experience..."></textarea>
-                    </div>
-                    <button type="submit">Submit Review</button>
-                </form>
+                </div>
             </div>
             <div class="modal-footer">
-                <button id="placeOrderBtn" class="order-btn">Place Order</button>
+                <button id="placeOrderBtn" class="btn btn-primary">Place Order</button>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- MOCK DATA ---
-            const shops = [
-                {
-                    id: 1, name: "Modern Bazaar", type: "Grocery", phone: "+91 98765 43210",
-                    address: "12, Gandhi Road, Tirupati, Andhra Pradesh", lat: 13.6330, lon: 79.4220,
-                    products: [{ name: "Tomato (1kg)", price: 40 }, { name: "Milk (1L)", price: 55 }],
-                    offer: { title: "20% Off Vegetables!", description: "This weekend only" },
-                    reviews: [ { name: "Ravi K.", rating: 5, comment: "Very fresh products!" } ]
-                },
-                {
-                    id: 2, name: "Fashion Point", type: "Boutique", phone: "+91 99887 76655",
-                    address: "Shop 4, Prakasam Road, Tirupati, Andhra Pradesh", lat: 13.6300, lon: 79.4190,
-                    products: [{ name: "Cotton T-Shirt", price: 499 }, { name: "Jeans", price: 1299 }],
-                    offer: { title: "Buy 1 Get 1 on T-Shirts", description: "Limited time offer" },
-                    reviews: [ { name: "Priya M.", rating: 4, comment: "Good collection, a bit pricey." } ]
-                },
-                {
-                    id: 3, name: "Balaji Electronics", type: "Electronics", phone: "+91 91234 56789",
-                    address: "Opp. Railway Station, Tirupati, Andhra Pradesh", lat: 13.6250, lon: 79.4250,
-                    products: [{ name: "Earbuds", price: 1500 }, { name: "Power Bank", price: 1000 }],
-                    offer: { title: "10% Cashback", description: "Using select cards" },
-                    reviews: []
-                }
-            ];
-            let currentShopId = null;
+    <script type="module">
+        import { supabase, requireRole, signOut } from '../js/supabase-client.js';
 
-            // --- DOM ELEMENTS ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { user, profile } = await requireRole('buyer');
+            if (!user || !profile) return;
+
+            let currentShopId = null;
+            let shops = [];
+            let products = [];
+            let offers = [];
+            let reviews = [];
+
             const searchBar = document.getElementById('searchBar');
             const offersCarousel = document.getElementById('offersCarousel');
             const shopGrid = document.getElementById('shopGrid');
             const shopModal = document.getElementById('shopModal');
 
-            // --- RENDER FUNCTIONS ---
-            const renderOffers = () => {
-                offersCarousel.innerHTML = '';
-                shops.forEach(shop => {
-                    if (shop.offer) {
-                        const offerCard = document.createElement('div');
-                        offerCard.className = 'offer-card';
-                        offerCard.innerHTML = `
-                            <h3>${shop.offer.title}</h3>
-                            <p>${shop.name} - ${shop.offer.description}</p>
-                        `;
-                        offersCarousel.appendChild(offerCard);
-                    }
-                });
-            };
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await signOut();
+                window.location.href = '../login.html';
+            });
 
-            const renderShops = (filteredShops) => {
+            async function loadShops() {
+                const { data, error } = await supabase
+                    .from('shops')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading shops:', error);
+                    return;
+                }
+
+                shops = data || [];
+                renderShops(shops);
+            }
+
+            async function loadOffers() {
+                const { data, error } = await supabase
+                    .from('offers')
+                    .select(`
+                        *,
+                        shops (name)
+                    `)
+                    .eq('active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    console.error('Error loading offers:', error);
+                    return;
+                }
+
+                offers = data || [];
+                renderOffers();
+            }
+
+            function renderOffers() {
+                offersCarousel.innerHTML = '';
+                if (offers.length === 0) {
+                    offersCarousel.innerHTML = '<div class="empty-state">No active offers at the moment</div>';
+                    return;
+                }
+
+                offers.forEach(offer => {
+                    const offerCard = document.createElement('div');
+                    offerCard.className = 'offer-card';
+                    offerCard.innerHTML = `
+                        <h3>${offer.title}</h3>
+                        <p>${offer.shops.name} - ${offer.description}</p>
+                    `;
+                    offerCard.addEventListener('click', async () => {
+                        const shop = shops.find(s => s.id === offer.shop_id);
+                        if (shop) await openShopModal(shop);
+                    });
+                    offersCarousel.appendChild(offerCard);
+                });
+            }
+
+            function renderShops(filteredShops) {
                 shopGrid.innerHTML = '';
+                if (filteredShops.length === 0) {
+                    shopGrid.innerHTML = '<div class="empty-state">No shops found</div>';
+                    return;
+                }
+
                 filteredShops.forEach(shop => {
                     const shopCard = document.createElement('div');
                     shopCard.className = 'shop-card';
-                    shopCard.dataset.shopId = shop.id;
                     shopCard.innerHTML = `
-                        <div class="shop-initial">${shop.name.charAt(0)}</div>
+                        <div class="shop-avatar">${shop.name.charAt(0).toUpperCase()}</div>
                         <div class="shop-details">
-                            <p class="name">${shop.name}</p>
-                            <p class="type">${shop.type}</p>
+                            <div class="shop-name">${shop.name}</div>
+                            <div class="shop-type">${shop.type}</div>
                         </div>
                     `;
+                    shopCard.addEventListener('click', () => openShopModal(shop));
                     shopGrid.appendChild(shopCard);
                 });
-            };
+            }
 
-            const renderReviews = (shop) => {
-                const reviewList = document.getElementById('reviewList');
-                reviewList.innerHTML = '';
-                if (shop.reviews.length === 0) {
-                    reviewList.innerHTML = '<p>No reviews yet. Be the first!</p>';
-                    return;
-                }
-                shop.reviews.forEach(review => {
-                    const item = document.createElement('div');
-                    item.className = 'review-item';
-                    item.innerHTML = `
-                        <p class="name">${review.name} <span class="stars">${'⭐'.repeat(review.rating)}</span></p>
-                        <p>${review.comment}</p>
-                    `;
-                    reviewList.appendChild(item);
-                });
-            };
-
-            // --- MODAL LOGIC ---
-            const openShopModal = (shop) => {
+            async function openShopModal(shop) {
                 currentShopId = shop.id;
                 document.getElementById('modalShopName').textContent = shop.name;
                 document.getElementById('modalShopPhone').textContent = shop.phone;
+                document.getElementById('modalShopWhatsapp').textContent = shop.whatsapp;
                 document.getElementById('modalShopAddress').textContent = shop.address;
-                
-                const mapFrame = document.getElementById('shopMap');
-                mapFrame.src = `https://maps.google.com/maps?q=${shop.lat},${shop.lon}&hl=en&z=14&output=embed`;
-                
-                const productList = document.getElementById('modalProductList');
-                productList.innerHTML = '';
-                shop.products.forEach(product => {
-                    const item = document.createElement('li');
-                    item.className = 'product-item';
-                    item.innerHTML = `<input type="checkbox" data-product-name="${product.name}"><div class="product-details">${product.name}</div><div class="product-price">₹${product.price}</div>`;
-                    productList.appendChild(item);
-                });
-                
-                renderReviews(shop);
-                shopModal.style.display = 'flex';
-            };
 
-            document.getElementById('closeModal').onclick = () => shopModal.style.display = 'none';
-            window.onclick = (e) => {
-                if(e.target == shopModal) shopModal.style.display = 'none';
+                const mapFrame = document.getElementById('shopMap');
+                mapFrame.src = `https://maps.google.com/maps?q=${shop.latitude},${shop.longitude}&hl=en&z=14&output=embed`;
+
+                await loadProducts(shop.id);
+                await loadReviews(shop.id);
+
+                shopModal.style.display = 'flex';
             }
 
-            // --- EVENT LISTENERS ---
-            searchBar.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                renderShops(shops.filter(shop => shop.name.toLowerCase().includes(query)));
-            });
+            async function loadProducts(shopId) {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('shop_id', shopId)
+                    .order('created_at', { ascending: false });
 
-            shopGrid.addEventListener('click', (e) => {
-                const card = e.target.closest('.shop-card');
-                if (card) {
-                    const shopId = parseInt(card.dataset.shopId);
-                    openShopModal(shops.find(s => s.id === shopId));
-                }
-            });
-
-            document.getElementById('placeOrderBtn').onclick = () => {
-                const selectedItems = [];
-                document.querySelectorAll('#modalProductList input[type="checkbox"]:checked').forEach(checkbox => {
-                    selectedItems.push(checkbox.dataset.productName);
-                });
-
-                if (selectedItems.length > 0) {
-                    alert(`Order placed successfully!\n\nItems:\n- ${selectedItems.join('\n- ')}\n\nYou will receive a confirmation call shortly.`);
-                    shopModal.style.display = 'none';
-                } else {
-                    alert("Please select at least one product to place an order.");
-                }
-            };
-
-            document.getElementById('reviewForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const rating = document.getElementById('reviewRating').value;
-                const comment = document.getElementById('reviewComment').value;
-
-                if (!comment) {
-                    alert('Please enter a comment.');
+                if (error) {
+                    console.error('Error loading products:', error);
                     return;
                 }
 
-                const shop = shops.find(s => s.id === currentShopId);
-                if (shop) {
-                    shop.reviews.unshift({ name: "You", rating: parseInt(rating), comment: comment });
-                    renderReviews(shop);
-                    e.target.reset();
-                    alert('Thank you for your review!');
+                products = data || [];
+                renderProducts();
+            }
+
+            function renderProducts() {
+                const productList = document.getElementById('modalProductList');
+                productList.innerHTML = '';
+
+                if (products.length === 0) {
+                    productList.innerHTML = '<div class="empty-state">No products available</div>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const item = document.createElement('li');
+                    item.className = 'product-item';
+                    item.innerHTML = `
+                        <input type="checkbox" class="product-checkbox" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
+                        <div class="product-info">
+                            <div class="product-name">${product.name} ${product.unit ? `(${product.unit})` : ''}</div>
+                            ${product.description ? `<div style="font-size: 0.9em; color: var(--text-light);">${product.description}</div>` : ''}
+                        </div>
+                        <div class="product-price">₹${product.price}</div>
+                    `;
+                    productList.appendChild(item);
+                });
+            }
+
+            async function loadReviews(shopId) {
+                const { data, error } = await supabase
+                    .from('reviews')
+                    .select(`
+                        *,
+                        profiles (email)
+                    `)
+                    .eq('shop_id', shopId)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading reviews:', error);
+                    return;
+                }
+
+                reviews = data || [];
+                renderReviews();
+            }
+
+            function renderReviews() {
+                const reviewList = document.getElementById('reviewList');
+                reviewList.innerHTML = '';
+
+                if (reviews.length === 0) {
+                    reviewList.innerHTML = '<div class="empty-state">No reviews yet. Be the first!</div>';
+                    return;
+                }
+
+                reviews.forEach(review => {
+                    const item = document.createElement('div');
+                    item.className = 'review-item';
+                    item.innerHTML = `
+                        <div class="review-header">
+                            <span class="reviewer-name">${review.profiles.email.split('@')[0]}</span>
+                            <span class="stars">${'⭐'.repeat(review.rating)}</span>
+                        </div>
+                        <p class="review-comment">${review.comment}</p>
+                    `;
+                    reviewList.appendChild(item);
+                });
+            }
+
+            document.getElementById('closeModal').onclick = () => shopModal.style.display = 'none';
+
+            window.onclick = (e) => {
+                if (e.target == shopModal) shopModal.style.display = 'none';
+            };
+
+            searchBar.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = shops.filter(shop =>
+                    shop.name.toLowerCase().includes(query) ||
+                    shop.type.toLowerCase().includes(query)
+                );
+                renderShops(filtered);
+            });
+
+            document.getElementById('placeOrderBtn').addEventListener('click', async () => {
+                const selectedProducts = [];
+                let totalAmount = 0;
+
+                document.querySelectorAll('#modalProductList .product-checkbox:checked').forEach(checkbox => {
+                    const productId = checkbox.dataset.productId;
+                    const productPrice = parseFloat(checkbox.dataset.productPrice);
+                    selectedProducts.push({ id: productId, price: productPrice });
+                    totalAmount += productPrice;
+                });
+
+                if (selectedProducts.length === 0) {
+                    alert('Please select at least one product');
+                    return;
+                }
+
+                try {
+                    const { data: order, error: orderError } = await supabase
+                        .from('orders')
+                        .insert([{
+                            shop_id: currentShopId,
+                            user_id: user.id,
+                            status: 'pending',
+                            total_amount: totalAmount
+                        }])
+                        .select()
+                        .single();
+
+                    if (orderError) throw orderError;
+
+                    const orderItems = selectedProducts.map(p => ({
+                        order_id: order.id,
+                        product_id: p.id,
+                        quantity: 1,
+                        price: p.price
+                    }));
+
+                    const { error: itemsError } = await supabase
+                        .from('order_items')
+                        .insert(orderItems);
+
+                    if (itemsError) throw itemsError;
+
+                    alert(`Order placed successfully!\nTotal: ₹${totalAmount}\n\nYou will receive a confirmation call shortly.`);
+                    shopModal.style.display = 'none';
+
+                    document.querySelectorAll('#modalProductList .product-checkbox:checked').forEach(cb => {
+                        cb.checked = false;
+                    });
+                } catch (error) {
+                    console.error('Error placing order:', error);
+                    alert('Failed to place order. Please try again.');
                 }
             });
-            
-            // --- INITIAL PAGE LOAD ---
-            renderOffers();
-            renderShops(shops);
+
+            document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const rating = parseInt(document.getElementById('reviewRating').value);
+                const comment = document.getElementById('reviewComment').value;
+
+                if (!comment.trim()) {
+                    alert('Please enter a comment');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('reviews')
+                        .insert([{
+                            shop_id: currentShopId,
+                            user_id: user.id,
+                            rating,
+                            comment
+                        }]);
+
+                    if (error) throw error;
+
+                    alert('Thank you for your review!');
+                    e.target.reset();
+                    await loadReviews(currentShopId);
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    alert('Failed to submit review. Please try again.');
+                }
+            });
+
+            await loadShops();
+            await loadOffers();
         });
     </script>
 </body>
 </html>
-

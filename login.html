@@ -4,58 +4,325 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grow Community Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif; background-color: #f4f7f6; margin: 0; color: #333;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-        .form-container {
-            background-color: white; padding: 30px 40px; border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
-            text-align: center; box-sizing: border-box;
+
+        .auth-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
         }
-        .logo { font-size: 1.8em; font-weight: 600; color: #2E7D32; margin-bottom: 5px; }
-        .tagline { font-size: 0.9em; color: #777; margin-bottom: 25px; }
-        .role-selector { display: flex; margin-bottom: 20px; background-color: #e8f5e9; border-radius: 8px; padding: 5px; }
-        .role-btn { flex: 1; padding: 10px; border: none; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; cursor: pointer; transition: background-color 0.3s, color 0.3s; }
-        .role-btn.active { background-color: #2E7D32; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9em; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1em; }
-        .submit-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background-color: #4CAF50; color: white; font-size: 1.1em; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .message-area { padding: 10px; margin-bottom: 15px; border-radius: 8px; font-size: 0.9em; display: none; }
-        .message-area.error { background-color: #ffebee; color: #c62828; display: block; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 0.95em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .auth-body {
+            padding: 40px 30px;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background-color: #f5f7fa;
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background-color: transparent;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: scale(1.02);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #94a3b8;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message-area {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            display: none;
+            font-weight: 500;
+        }
+
+        .message-area.error {
+            background-color: #fee;
+            color: #c81e1e;
+            border: 1px solid #fcc;
+            display: block;
+        }
+
+        .message-area.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #334155;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 16px;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                border-radius: 16px;
+            }
+
+            .auth-header {
+                padding: 30px 20px;
+            }
+
+            .auth-body {
+                padding: 30px 20px;
+            }
+
+            .logo {
+                font-size: 1.6em;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <div class="logo">Grow Community 🌱</div>
-        <p class="tagline">Connecting local shops and buyers.</p>
-        <div class="role-selector">
-            <button id="buyerBtn" class="role-btn active">Buyer</button>
-            <button id="sellerBtn" class="role-btn">Seller</button>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">Grow Community</div>
+            <p class="tagline">Connecting local shops and buyers</p>
         </div>
-        <form id="auth-form">
-            <h2>Login</h2>
+
+        <div class="auth-body">
+            <div class="role-selector">
+                <button id="buyerBtn" class="role-btn active">Buyer</button>
+                <button id="sellerBtn" class="role-btn">Seller</button>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+
             <div id="message-area" class="message-area"></div>
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required placeholder="you@example.com">
+
+            <div id="loginForm" class="form-section active">
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <div class="loading">Logging in...</div>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="••••••••">
+
+            <div id="signupForm" class="form-section">
+                <form id="signup-form">
+                    <div class="input-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="Create a password (min 6 characters)">
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-confirm">Confirm Password</label>
+                        <input type="password" id="signup-confirm" required placeholder="Re-enter your password">
+                    </div>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+                <div class="loading">Creating account...</div>
             </div>
-            <button type="submit" class="submit-btn">Login</button>
-        </form>
+        </div>
     </div>
-    <script>
+
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+
         document.addEventListener('DOMContentLoaded', () => {
             const buyerBtn = document.getElementById('buyerBtn');
             const sellerBtn = document.getElementById('sellerBtn');
-            const form = document.getElementById('auth-form');
             const messageArea = document.getElementById('message-area');
             let selectedRole = 'buyer';
 
@@ -71,26 +338,150 @@
                 buyerBtn.classList.remove('active');
             });
 
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const formSections = document.querySelectorAll('.form-section');
 
-                // **CHANGE**: This now accepts any non-empty email and password.
-                if (email && password) {
-                    if (selectedRole === 'seller') {
-                        window.location.href = 'seller/select_domain.html';
-                    } else {
-                        window.location.href = 'coustmer/customer_dashboard.html';
-                    }
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    formSections.forEach(section => section.classList.remove('active'));
+
+                    button.classList.add('active');
+                    const tabName = button.dataset.tab;
+                    document.getElementById(tabName + 'Form').classList.add('active');
+
+                    messageArea.style.display = 'none';
+                });
+            });
+
+            function showMessage(message, type = 'error') {
+                messageArea.textContent = message;
+                messageArea.className = `message-area ${type}`;
+                messageArea.style.display = 'block';
+            }
+
+            function showLoading(formId, show) {
+                const form = document.querySelector(`#${formId} form`);
+                const loading = document.querySelector(`#${formId} .loading`);
+                const submitBtn = form.querySelector('.submit-btn');
+
+                if (show) {
+                    submitBtn.disabled = true;
+                    loading.classList.add('active');
                 } else {
-                    messageArea.textContent = "Please enter both email and password.";
-                    messageArea.className = 'message-area error';
-                    messageArea.style.display = 'block';
+                    submitBtn.disabled = false;
+                    loading.classList.remove('active');
+                }
+            }
+
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageArea.style.display = 'none';
+                showLoading('loginForm', true);
+
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                    if (error) throw error;
+
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+
+                    if (profile && profile.role === selectedRole) {
+                        if (selectedRole === 'seller') {
+                            window.location.href = 'seller/select_domain.html';
+                        } else {
+                            window.location.href = 'coustmer/customer_dashboard.html';
+                        }
+                    } else {
+                        await supabase.auth.signOut();
+                        throw new Error(`Please login as a ${selectedRole}`);
+                    }
+                } catch (error) {
+                    showLoading('loginForm', false);
+                    showMessage(error.message, 'error');
                 }
             });
+
+            document.getElementById('signup-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageArea.style.display = 'none';
+                showLoading('signupForm', true);
+
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm').value;
+
+                if (password !== confirmPassword) {
+                    showLoading('signupForm', false);
+                    showMessage('Passwords do not match', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showLoading('signupForm', false);
+                    showMessage('Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase.auth.signUp({
+                        email,
+                        password
+                    });
+
+                    if (error) throw error;
+
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert([
+                            { id: data.user.id, email, role: selectedRole }
+                        ]);
+
+                    if (profileError) throw profileError;
+
+                    showMessage('Account created successfully! Please login.', 'success');
+
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="login"]').click();
+                        document.getElementById('login-email').value = email;
+                        showLoading('signupForm', false);
+                    }, 1500);
+
+                } catch (error) {
+                    showLoading('signupForm', false);
+                    showMessage(error.message, 'error');
+                }
+            });
+
+            (async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .maybeSingle();
+
+                    if (profile) {
+                        if (profile.role === 'seller') {
+                            window.location.href = 'seller/seller_dashboard.html';
+                        } else {
+                            window.location.href = 'coustmer/customer_dashboard.html';
+                        }
+                    }
+                }
+            })();
         });
     </script>
 </body>
 </html>
-

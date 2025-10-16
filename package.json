@@ -1,0 +1,16 @@
+{
+  "name": "grow-community",
+  "version": "1.0.0",
+  "description": "A local community marketplace connecting buyers and sellers",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'Build successful - Static HTML project ready for deployment'",
+    "preview": "echo 'Preview mode - Open login.html in browser'"
+  },
+  "keywords": ["marketplace", "local", "community"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.75.0"
+  }
+}
