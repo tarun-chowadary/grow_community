@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #4CAF50;
+            --accent-color: #FFC107;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            color: #333;
+        }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+        
+        /* --- Header & Search --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .location-info { font-size: 1.1em; font-weight: 500; }
+        .location-info strong { color: var(--primary-color); }
+        .search-bar { width: 100%; padding: 12px 15px; font-size: 1em; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* --- Offers & Shops Sections --- */
+        .offers-section h2, .shops-section h2 { font-size: 1.5em; color: #333; margin-bottom: 15px; }
+        .offers-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+        .offers-carousel::-webkit-scrollbar { display: none; }
+        .offer-card { flex: 0 0 280px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .offer-card h3 { margin: 0 0 5px 0; }
+        .offer-card p { margin: 0; font-size: 0.9em; opacity: 0.9; }
+        
+        /* --- Shop Grid --- */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .shop-card { background-color: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+        .shop-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .shop-initial { width: 50px; height: 50px; background-color: var(--light-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.5em; color: var(--primary-color); margin-right: 15px; }
+        .shop-details .name { font-weight: 600; font-size: 1.1em; }
+        .shop-details .type { font-size: 0.9em; color: #6c757d; }
+
+        /* --- Shop Detail Modal --- */
+        .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .modal-header h2 { margin: 0; color: var(--primary-color); }
+        .close-btn { font-size: 28px; font-weight: bold; cursor: pointer; color: #6c757d; }
+        .modal-body { overflow-y: auto; padding-right: 15px; }
+        .modal-shop-details p { margin: 4px 0; }
+        .map-container { width: 100%; height: 200px; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid var(--border-color); }
+        .modal-body h3 { border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; }
+        
+        /* Product & Review List */
+        .product-list, .review-list { list-style: none; padding: 0; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .review-item { padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .review-item .name { font-weight: 600; }
+        .review-item .stars { color: var(--accent-color); }
+        .product-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 15px; }
+        .product-price { font-weight: 600; }
+        
+        /* Review Form */
+        #reviewForm .form-group { margin-bottom: 10px; }
+        #reviewForm textarea { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins'; }
+        #reviewForm button { padding: 10px 20px; border-radius: 8px; border: none; background-color: var(--secondary-color); color: white; cursor: pointer; }
+        
+        .modal-footer { margin-top: 20px; text-align: right; }
+        .order-btn { padding: 12px 25px; border: none; background-color: var(--primary-color); color: white; border-radius: 8px; font-size: 1em; font-weight: 500; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header"><div class="location-info">Shops Near: <strong>Tirupati</strong></div></div>
+        <input type="search" id="searchBar" class="search-bar" placeholder="Search for shops...">
+        <div class="offers-section"><h2>Recent Offers</h2><div id="offersCarousel" class="offers-carousel"></div></div>
+        <div class="shops-section"><h2>All Shops</h2><div id="shopGrid" class="shop-grid"></div></div>
+    </div>
+
+    <!-- Shop Detail Modal -->
+    <div id="shopModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="modalShopName">Shop Name</h2><span id="closeModal" class="close-btn">&times;</span></div>
+            <div class="modal-body">
+                <div class="modal-shop-details">
+                    <p><strong>Contact:</strong> <span id="modalShopPhone"></span></p>
+                    <p><strong>Address:</strong> <span id="modalShopAddress"></span></p>
+                </div>
+                <div class="map-container">
+                    <iframe id="shopMap" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                </div>
+                
+                <h3>Available Products (Select to Order)</h3>
+                <ul id="modalProductList" class="product-list"></ul>
+                
+                <h3>Reviews & Feedback</h3>
+                <div id="reviewList" class="review-list"></div>
+                
+                <h3>Leave a Review</h3>
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label for="reviewRating">Rating:</label>
+                        <select id="reviewRating">
+                            <option value="5">⭐⭐⭐⭐⭐</option>
+                            <option value="4">⭐⭐⭐⭐</option>
+                            <option value="3">⭐⭐⭐</option>
+                            <option value="2">⭐⭐</option>
+                            <option value="1">⭐</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewComment">Comment:</label>
+                        <textarea id="reviewComment" rows="3" placeholder="Share your experience..."></textarea>
+                    </div>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="placeOrderBtn" class="order-btn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- MOCK DATA ---
+            const shops = [
+                {
+                    id: 1, name: "Modern Bazaar", type: "Grocery", phone: "+91 98765 43210",
+                    address: "12, Gandhi Road, Tirupati, Andhra Pradesh", lat: 13.6330, lon: 79.4220,
+                    products: [{ name: "Tomato (1kg)", price: 40 }, { name: "Milk (1L)", price: 55 }],
+                    offer: { title: "20% Off Vegetables!", description: "This weekend only" },
+                    reviews: [ { name: "Ravi K.", rating: 5, comment: "Very fresh products!" } ]
+                },
+                {
+                    id: 2, name: "Fashion Point", type: "Boutique", phone: "+91 99887 76655",
+                    address: "Shop 4, Prakasam Road, Tirupati, Andhra Pradesh", lat: 13.6300, lon: 79.4190,
+                    products: [{ name: "Cotton T-Shirt", price: 499 }, { name: "Jeans", price: 1299 }],
+                    offer: { title: "Buy 1 Get 1 on T-Shirts", description: "Limited time offer" },
+                    reviews: [ { name: "Priya M.", rating: 4, comment: "Good collection, a bit pricey." } ]
+                },
+                {
+                    id: 3, name: "Balaji Electronics", type: "Electronics", phone: "+91 91234 56789",
+                    address: "Opp. Railway Station, Tirupati, Andhra Pradesh", lat: 13.6250, lon: 79.4250,
+                    products: [{ name: "Earbuds", price: 1500 }, { name: "Power Bank", price: 1000 }],
+                    offer: { title: "10% Cashback", description: "Using select cards" },
+                    reviews: []
+                }
+            ];
+            let currentShopId = null;
+
+            // --- DOM ELEMENTS ---
+            const searchBar = document.getElementById('searchBar');
+            const offersCarousel = document.getElementById('offersCarousel');
+            const shopGrid = document.getElementById('shopGrid');
+            const shopModal = document.getElementById('shopModal');
+
+            // --- RENDER FUNCTIONS ---
+            const renderOffers = () => {
+                offersCarousel.innerHTML = '';
+                shops.forEach(shop => {
+                    if (shop.offer) {
+                        const offerCard = document.createElement('div');
+                        offerCard.className = 'offer-card';
+                        offerCard.innerHTML = `
+                            <h3>${shop.offer.title}</h3>
+                            <p>${shop.name} - ${shop.offer.description}</p>
+                        `;
+                        offersCarousel.appendChild(offerCard);
+                    }
+                });
+            };
+
+            const renderShops = (filteredShops) => {
+                shopGrid.innerHTML = '';
+                filteredShops.forEach(shop => {
+                    const shopCard = document.createElement('div');
+                    shopCard.className = 'shop-card';
+                    shopCard.dataset.shopId = shop.id;
+                    shopCard.innerHTML = `
+                        <div class="shop-initial">${shop.name.charAt(0)}</div>
+                        <div class="shop-details">
+                            <p class="name">${shop.name}</p>
+                            <p class="type">${shop.type}</p>
+                        </div>
+                    `;
+                    shopGrid.appendChild(shopCard);
+                });
+            };
+
+            const renderReviews = (shop) => {
+                const reviewList = document.getElementById('reviewList');
+                reviewList.innerHTML = '';
+                if (shop.reviews.length === 0) {
+                    reviewList.innerHTML = '<p>No reviews yet. Be the first!</p>';
+                    return;
+                }
+                shop.reviews.forEach(review => {
+                    const item = document.createElement('div');
+                    item.className = 'review-item';
+                    item.innerHTML = `
+                        <p class="name">${review.name} <span class="stars">${'⭐'.repeat(review.rating)}</span></p>
+                        <p>${review.comment}</p>
+                    `;
+                    reviewList.appendChild(item);
+                });
+            };
+
+            // --- MODAL LOGIC ---
+            const openShopModal = (shop) => {
+                currentShopId = shop.id;
+                document.getElementById('modalShopName').textContent = shop.name;
+                document.getElementById('modalShopPhone').textContent = shop.phone;
+                document.getElementById('modalShopAddress').textContent = shop.address;
+                
+                const mapFrame = document.getElementById('shopMap');
+                mapFrame.src = `https://maps.google.com/maps?q=${shop.lat},${shop.lon}&hl=en&z=14&output=embed`;
+                
+                const productList = document.getElementById('modalProductList');
+                productList.innerHTML = '';
+                shop.products.forEach(product => {
+                    const item = document.createElement('li');
+                    item.className = 'product-item';
+                    item.innerHTML = `<input type="checkbox" data-product-name="${product.name}"><div class="product-details">${product.name}</div><div class="product-price">₹${product.price}</div>`;
+                    productList.appendChild(item);
+                });
+                
+                renderReviews(shop);
+                shopModal.style.display = 'flex';
+            };
+
+            document.getElementById('closeModal').onclick = () => shopModal.style.display = 'none';
+            window.onclick = (e) => {
+                if(e.target == shopModal) shopModal.style.display = 'none';
+            }
+
+            // --- EVENT LISTENERS ---
+            searchBar.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                renderShops(shops.filter(shop => shop.name.toLowerCase().includes(query)));
+            });
+
+            shopGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.shop-card');
+                if (card) {
+                    const shopId = parseInt(card.dataset.shopId);
+                    openShopModal(shops.find(s => s.id === shopId));
+                }
+            });
+
+            document.getElementById('placeOrderBtn').onclick = () => {
+                const selectedItems = [];
+                document.querySelectorAll('#modalProductList input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedItems.push(checkbox.dataset.productName);
+                });
+
+                if (selectedItems.length > 0) {
+                    alert(`Order placed successfully!\n\nItems:\n- ${selectedItems.join('\n- ')}\n\nYou will receive a confirmation call shortly.`);
+                    shopModal.style.display = 'none';
+                } else {
+                    alert("Please select at least one product to place an order.");
+                }
+            };
+
+            document.getElementById('reviewForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const rating = document.getElementById('reviewRating').value;
+                const comment = document.getElementById('reviewComment').value;
+
+                if (!comment) {
+                    alert('Please enter a comment.');
+                    return;
+                }
+
+                const shop = shops.find(s => s.id === currentShopId);
+                if (shop) {
+                    shop.reviews.unshift({ name: "You", rating: parseInt(rating), comment: comment });
+                    renderReviews(shop);
+                    e.target.reset();
+                    alert('Thank you for your review!');
+                }
+            });
+            
+            // --- INITIAL PAGE LOAD ---
+            renderOffers();
+            renderShops(shops);
+        });
+    </script>
+</body>
+</html>
+

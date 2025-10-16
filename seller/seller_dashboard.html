@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --dark-bg: #212529;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--light-bg); margin: 0; color: #333; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        .card { background-color: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-nav h1 { margin: 0; font-size: 1.8em; color: var(--primary-color); font-weight: 700; }
+        .shop-info { display: flex; align-items: center; cursor: pointer; transition: background-color 0.2s; }
+        .shop-info:hover { background-color: #fdfdfd; }
+        .shop-initial {
+            width: 50px; height: 50px; background-color: var(--primary-color); color: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.5em;
+            margin-right: 20px; background-size: cover; background-position: center; border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .shop-details p { margin: 0; }
+        .shop-details .name { font-weight: 600; font-size: 1.1em; }
+        .shop-details .contact { font-size: 0.9em; color: #6c757d; }
+        .main-tabs { display: flex; background-color: var(--light-bg); border-radius: 8px; padding: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; cursor: pointer; color: #495057; transition: all 0.2s ease; }
+        .tab-btn.active { background-color: white; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .content-section h2 { margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; font-size: 1em; box-sizing: border-box; }
+        .image-preview { width: 100px; height: 100px; border: 1px dashed #ced4da; border-radius: 8px; margin-top: 10px; background-size: cover; background-position: center; }
+        .submit-btn { padding: 12px 30px; border: none; background-color: var(--dark-bg); color: white; border-radius: 8px; font-size: 1em; cursor: pointer; width: 100%; margin-top: 10px; }
+        #addItemForm { margin-top: 20px; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; background-color: #fefefe; }
+        #toggleAddItemFormBtn { padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; margin-bottom: 15px; }
+        #productList { list-style: none; padding: 0; margin-top: 20px; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s; }
+        .product-item:hover { background-color: #f5f5f5; }
+        .product-item-left { display: flex; align-items: center; }
+        .product-item img { width: 50px; height: 50px; border-radius: 6px; margin-right: 15px; object-fit: cover; }
+        .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; color: var(--primary-color); }
+        .close-btn { font-size: 28px; font-weight: bold; cursor: pointer; color: #6c757d; }
+        .map-container { width: 100%; height: 200px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-nav"><h1>Seller Dashboard</h1></div>
+        <div id="editProfileTrigger" class="card shop-info">
+            <div id="displayShopInitial" class="shop-initial"></div>
+            <div class="shop-details"><p id="displayShopName" class="name"></p><p id="displayShopContact" class="contact"></p></div>
+        </div>
+        <div class="card">
+            <div class="main-tabs">
+                <button class="tab-btn active" data-tab="products">Products</button>
+                <button class="tab-btn" data-tab="orders">Orders</button>
+                <button class="tab-btn" data-tab="offers">Offers</button>
+                <button class="tab-btn" data-tab="analytics">Analytics</button>
+            </div>
+
+            <div id="productsContent" class="content-section active">
+                <button id="toggleAddItemFormBtn">+ Add New Product</button>
+                <form id="addItemForm" style="display:none;">
+                    <h2>Add New Item</h2>
+                    <div class="form-group"><label for="itemName">Item name</label><input type="text" id="itemName" required></div>
+                    <div class="form-grid">
+                        <div class="form-group"><label for="itemPrice">Price</label><input type="number" id="itemPrice" required></div>
+                        <div class="form-group"><label for="itemUnit">Unit (optional)</label><input type="text" id="itemUnit" placeholder="e.g., kg, piece"></div>
+                    </div>
+                    <div class="form-group"><label for="itemDescription">Description (optional)</label><input type="text" id="itemDescription"></div>
+                    <div class="form-group"><label for="itemImage">Image (optional)</label><input type="file" id="itemImage" accept="image/*"><div id="itemImagePreview" class="image-preview"></div></div>
+                    <button type="submit" class="submit-btn">Add Item</button>
+                </form>
+                <h2 style="margin-top:30px;">Manage Existing Products</h2>
+                <ul id="productList"></ul>
+            </div>
+            <div id="ordersContent" class="content-section"><h2>Orders</h2><p style="text-align:center;">You have 12 new orders today.</p></div>
+            <div id="offersContent" class="content-section"><h2>Offer Video</h2><p>Paste a link to a short promo video.</p><form id="offerVideoForm"><div class="form-group"><label for="videoUrl">Video URL</label><input type="url" id="videoUrl" placeholder="https://..." required></div><button type="submit" class="submit-btn">Save Offer</button></form></div>
+            <div id="analyticsContent" class="content-section"><h2>Analytics</h2><p style="text-align:center;">View your shop's performance analytics here.</p></div>
+        </div>
+    </div>
+
+    <div id="shopProfileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Edit Shop Profile</h2><span class="close-btn">&times;</span></div>
+            <form id="shopProfileForm">
+                <div class="form-group"><label for="profileImage">Profile Image</label><input type="file" id="profileImage" accept="image/*"><div id="profileImagePreview" class="image-preview"></div></div>
+                <div class="form-group"><label for="shopName">Shop Name</label><input type="text" id="shopName" required></div>
+                <div class="form-group"><label for="shopType">Shop Type</label><input type="text" id="shopType" readonly></div>
+                <div class="form-grid">
+                    <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" required></div>
+                    <div class="form-group"><label for="whatsapp">WhatsApp Number</label><input type="tel" id="whatsapp" required></div>
+                </div>
+                <div class="form-group"><label for="address">Address</label><textarea id="address" rows="3" required></textarea></div>
+                <div class="map-container"><iframe id="shopMap" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen=""></iframe></div>
+                <button type="submit" class="submit-btn">Save Profile</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="editProductModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Edit Product</h2><span class="close-btn">&times;</span></div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group"><label for="editItemName">Item name</label><input type="text" id="editItemName" required></div>
+                <div class="form-grid">
+                    <div class="form-group"><label for="editItemPrice">Price</label><input type="number" id="editItemPrice" required></div>
+                    <div class="form-group"><label for="editItemUnit">Unit (optional)</label><input type="text" id="editItemUnit"></div>
+                </div>
+                <div class="form-group"><label for="editItemDescription">Description (optional)</label><input type="text" id="editItemDescription"></div>
+                <div class="form-group"><label for="editItemImage">Image (optional)</label><input type="file" id="editItemImage" accept="image/*"><div id="editItemImagePreview" class="image-preview"></div></div>
+                <button type="submit" class="submit-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectedDomain = localStorage.getItem('sellerDomain') || "General";
+            let shopProfile = { 
+                name: `My ${selectedDomain} Store`, type: selectedDomain, phone: "+91 90000 00000", whatsapp: "+91 90000 00000", 
+                address: "Tirupati, Andhra Pradesh", image: "", lat: 13.6288, lon: 79.4192
+            };
+            let products = [
+                { id: 1, name: "Sample Item 1", price: 100, unit: "pc", description: "", image: "" }
+            ];
+
+            const shopProfileModal = document.getElementById('shopProfileModal');
+            const editProductModal = document.getElementById('editProductModal');
+            
+            const updateShopInfoDisplay = () => {
+                document.getElementById('displayShopName').textContent = shopProfile.name;
+                document.getElementById('displayShopContact').textContent = `${shopProfile.phone} • ${shopProfile.type}`;
+                const displayShopInitial = document.getElementById('displayShopInitial');
+                if (shopProfile.image) {
+                    displayShopInitial.style.backgroundImage = `url('${shopProfile.image}')`;
+                    displayShopInitial.textContent = '';
+                } else {
+                    displayShopInitial.style.backgroundImage = '';
+                    displayShopInitial.textContent = shopProfile.name.charAt(0).toUpperCase();
+                }
+            };
+
+            const renderProducts = () => {
+                const productList = document.getElementById('productList');
+                productList.innerHTML = '';
+                products.forEach(p => {
+                    const item = document.createElement('li');
+                    item.className = 'product-item';
+                    item.dataset.productId = p.id;
+                    item.innerHTML = `
+                        <div class="product-item-left">
+                            <img src="${p.image || 'https://placehold.co/50x50/e9ecef/495057?text=Img'}" alt="${p.name}">
+                            <div><div class="name">${p.name}</div><div class="unit">${p.unit || ''}</div></div>
+                        </div>
+                        <span class="price">₹${p.price}</span>`;
+                    productList.appendChild(item);
+                });
+            };
+            
+            const setupModal = (trigger, modal) => {
+                const closeBtn = modal.querySelector('.close-btn');
+                if (trigger) trigger.addEventListener('click', () => modal.style.display = 'flex');
+                if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
+            };
+            
+            setupModal(document.getElementById('editProfileTrigger'), shopProfileModal);
+            setupModal(null, editProductModal);
+
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
+            });
+
+            document.querySelectorAll('.main-tabs .tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelector('.main-tabs .tab-btn.active').classList.remove('active');
+                    document.querySelector('.content-section.active').classList.remove('active');
+                    button.classList.add('active');
+                    document.getElementById(button.dataset.tab + 'Content').classList.add('active');
+                });
+            });
+
+            document.getElementById('editProfileTrigger').addEventListener('click', () => {
+                document.getElementById('shopName').value = shopProfile.name;
+                document.getElementById('shopType').value = shopProfile.type;
+                document.getElementById('phone').value = shopProfile.phone;
+                document.getElementById('whatsapp').value = shopProfile.whatsapp;
+                document.getElementById('address').value = shopProfile.address;
+                document.getElementById('profileImagePreview').style.backgroundImage = shopProfile.image ? `url('${shopProfile.image}')` : '';
+                document.getElementById('shopMap').src = `https://maps.google.com/maps?q=${shopProfile.lat},${shopProfile.lon}&hl=en&z=14&output=embed`;
+            });
+
+            document.getElementById('shopProfileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                shopProfile.name = document.getElementById('shopName').value;
+                shopProfile.phone = document.getElementById('phone').value;
+                shopProfile.whatsapp = document.getElementById('whatsapp').value;
+                shopProfile.address = document.getElementById('address').value;
+                shopProfile.image = document.getElementById('profileImagePreview').style.backgroundImage.slice(5,-2);
+                updateShopInfoDisplay();
+                alert('Profile updated successfully!');
+                shopProfileModal.style.display = 'none';
+            });
+            
+            const setupImagePreview = (inputId, previewId) => {
+                const input = document.getElementById(inputId);
+                const preview = document.getElementById(previewId);
+                input.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => { preview.style.backgroundImage = `url('${event.target.result}')`; };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            };
+            
+            setupImagePreview('profileImage', 'profileImagePreview');
+            setupImagePreview('itemImage', 'itemImagePreview');
+            setupImagePreview('editItemImage', 'editItemImagePreview');
+
+            const toggleAddItemFormBtn = document.getElementById('toggleAddItemFormBtn');
+            const addItemForm = document.getElementById('addItemForm');
+            toggleAddItemFormBtn.addEventListener('click', () => {
+                const isHidden = addItemForm.style.display === 'none';
+                addItemForm.style.display = isHidden ? 'block' : 'none';
+                toggleAddItemFormBtn.textContent = isHidden ? '- Hide Form' : '+ Add New Product';
+            });
+
+            addItemForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newProduct = {
+                    id: Date.now(),
+                    name: document.getElementById('itemName').value,
+                    price: parseFloat(document.getElementById('itemPrice').value),
+                    unit: document.getElementById('itemUnit').value,
+                    image: document.getElementById('itemImagePreview').style.backgroundImage.slice(5,-2)
+                };
+                products.unshift(newProduct);
+                renderProducts();
+                e.target.reset();
+                document.getElementById('itemImagePreview').style.backgroundImage = '';
+                alert(`"${newProduct.name}" added successfully!`);
+            });
+            
+            document.getElementById('productList').addEventListener('click', (e) => {
+                const listItem = e.target.closest('.product-item');
+                if (listItem) {
+                    const product = products.find(p => p.id === parseInt(listItem.dataset.productId));
+                    if(product){
+                        document.getElementById('editProductId').value = product.id;
+                        document.getElementById('editItemName').value = product.name;
+                        document.getElementById('editItemPrice').value = product.price;
+                        document.getElementById('editItemUnit').value = product.unit;
+                        document.getElementById('editItemDescription').value = product.description;
+                        document.getElementById('editItemImagePreview').style.backgroundImage = product.image ? `url('${product.image}')` : '';
+                        editProductModal.style.display = 'flex';
+                    }
+                }
+            });
+            
+            document.getElementById('editProductForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const productId = parseInt(document.getElementById('editProductId').value);
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    product.name = document.getElementById('editItemName').value;
+                    product.price = parseFloat(document.getElementById('editItemPrice').value);
+                    product.unit = document.getElementById('editItemUnit').value;
+                    product.description = document.getElementById('editItemDescription').value;
+                    product.image = document.getElementById('editItemImagePreview').style.backgroundImage.slice(5,-2);
+                    renderProducts();
+                    alert(`"${product.name}" updated successfully!`);
+                    editProductModal.style.display = 'none';
+                }
+            });
+
+            updateShopInfoDisplay();
+            renderProducts();
+        });
+    </script>
+</body>
+</html>

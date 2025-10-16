@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Community Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif; background-color: #f4f7f6; margin: 0; color: #333;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .form-container {
+            background-color: white; padding: 30px 40px; border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
+            text-align: center; box-sizing: border-box;
+        }
+        .logo { font-size: 1.8em; font-weight: 600; color: #2E7D32; margin-bottom: 5px; }
+        .tagline { font-size: 0.9em; color: #777; margin-bottom: 25px; }
+        .role-selector { display: flex; margin-bottom: 20px; background-color: #e8f5e9; border-radius: 8px; padding: 5px; }
+        .role-btn { flex: 1; padding: 10px; border: none; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; cursor: pointer; transition: background-color 0.3s, color 0.3s; }
+        .role-btn.active { background-color: #2E7D32; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9em; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1em; }
+        .submit-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background-color: #4CAF50; color: white; font-size: 1.1em; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .message-area { padding: 10px; margin-bottom: 15px; border-radius: 8px; font-size: 0.9em; display: none; }
+        .message-area.error { background-color: #ffebee; color: #c62828; display: block; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo">Grow Community 🌱</div>
+        <p class="tagline">Connecting local shops and buyers.</p>
+        <div class="role-selector">
+            <button id="buyerBtn" class="role-btn active">Buyer</button>
+            <button id="sellerBtn" class="role-btn">Seller</button>
+        </div>
+        <form id="auth-form">
+            <h2>Login</h2>
+            <div id="message-area" class="message-area"></div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buyerBtn = document.getElementById('buyerBtn');
+            const sellerBtn = document.getElementById('sellerBtn');
+            const form = document.getElementById('auth-form');
+            const messageArea = document.getElementById('message-area');
+            let selectedRole = 'buyer';
+
+            buyerBtn.addEventListener('click', () => {
+                selectedRole = 'buyer';
+                buyerBtn.classList.add('active');
+                sellerBtn.classList.remove('active');
+            });
+
+            sellerBtn.addEventListener('click', () => {
+                selectedRole = 'seller';
+                sellerBtn.classList.add('active');
+                buyerBtn.classList.remove('active');
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // **CHANGE**: This now accepts any non-empty email and password.
+                if (email && password) {
+                    if (selectedRole === 'seller') {
+                        window.location.href = 'seller/select_domain.html';
+                    } else {
+                        window.location.href = 'coustmer/customer_dashboard.html';
+                    }
+                } else {
+                    messageArea.textContent = "Please enter both email and password.";
+                    messageArea.className = 'message-area error';
+                    messageArea.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

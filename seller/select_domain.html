@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Domain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .selection-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1 {
+            color: #2E7D32;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .domain-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .domain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: #2E7D32;
+        }
+        .domain-card svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 10px;
+            fill: #2E7D32;
+        }
+        .domain-card p {
+            margin: 0;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="selection-container">
+        <h1>Select Your Business Domain</h1>
+        <div class="domain-grid">
+            
+            <div class="domain-card" data-domain="Grocery">
+                <svg viewBox="0 0 24 24"><path d="M16 6V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6h-6zm-6-2h4v2h-4V4zm10 15H4V8h16v11z"/></svg>
+                <p>Grocery</p>
+            </div>
+            
+            <div class="domain-card" data-domain="Restaurant">
+                <svg viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+                <p>Restaurant</p>
+            </div>
+
+            <div class="domain-card" data-domain="Fruit Shop">
+                <svg viewBox="0 0 24 24"><path d="M5 16h3.17L12 9.17 15.83 16H19V4H5v12zm7-9.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/></svg>
+                <p>Fruit Shop</p>
+            </div>
+            
+            <div class="domain-card" data-domain="Electronics">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4V6zm18-2H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 4H8v2h6V8zm-2 4h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+                <p>Electronics</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const domainCards = document.querySelectorAll('.domain-card');
+
+            domainCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const selectedDomain = card.dataset.domain;
+                    
+                    // **CHANGE**: Save the selected domain to localStorage.
+                    // This allows the next page to know what was chosen.
+                    localStorage.setItem('sellerDomain', selectedDomain);
+                    
+                    // Redirect to the main seller dashboard
+                    window.location.href = 'seller_dashboard.html';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
